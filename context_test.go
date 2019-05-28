@@ -3,6 +3,7 @@ package mux
 import (
 	"context"
 	"net/http"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -27,4 +28,25 @@ func TestNativeContextMiddleware(t *testing.T) {
 	rec := NewRecorder()
 	req := newRequest("GET", "/path/bar")
 	r.ServeHTTP(rec, req)
+}
+
+func TestContextSetGet(t *testing.T) {
+	tests := []struct {
+		key   interface{}
+		value interface{}
+	}{
+		{1, 2},
+		{"test", 42},
+	}
+
+	req := newRequest("GET", "/path/bar")
+	for _, test := range tests {
+		contextSet(req, test.key, test.value)
+	}
+	for _, test := range tests {
+		value := contextGet(req, test.key)
+		if !reflect.DeepEqual(value, test.value) {
+			t.Errorf(`Expected %+v got %+v`, test.value, value)
+		}
+	}
 }
