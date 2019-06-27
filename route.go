@@ -27,6 +27,9 @@ type Route struct {
 	// "global" reference to all named routes
 	namedRoutes map[string]*Route
 
+	// If true, this route will not be matches: until it is set false
+	disable bool
+
 	// config possibly passed in from `Router`
 	routeConf
 }
@@ -35,6 +38,21 @@ type Route struct {
 // Router.SkipClean.
 func (r *Route) SkipClean() bool {
 	return r.skipClean
+}
+
+// Disable set Route.disable to true, so can skip this route while do Match
+func (r *Route) Disable() {
+	r.disable = true
+}
+
+// IsDisable check whether route is already disabled
+func (r *Route) IsDisable() bool {
+	return r.disable == true
+}
+
+// Enable set Route.disable to false, Match will check this route
+func (r *Route) Enable() {
+	r.disable = false
 }
 
 // Match matches the route against the request.
